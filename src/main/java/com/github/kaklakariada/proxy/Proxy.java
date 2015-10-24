@@ -1,6 +1,7 @@
 package com.github.kaklakariada.proxy;
 
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
@@ -20,8 +21,8 @@ public class Proxy {
 
     public static void main(String[] args) {
         LOG.info("Starting...");
-        final InetSocketAddress listeningAddress = getInterfaceAddress("eth0", 8888);
-        final InetSocketAddress outgoingAddress = getInterfaceAddress("wlan0", 0);
+        final InetSocketAddress listeningAddress = getInterfaceAddress("eth0", 8888, Inet4Address.class);
+        final InetSocketAddress outgoingAddress = getInterfaceAddress("wlan0", 0, Inet6Address.class);
 
         final HttpProxyServer server = DefaultHttpProxyServer.bootstrap() //
                 .withAddress(listeningAddress) //
@@ -29,7 +30,8 @@ public class Proxy {
                 .start();
     }
 
-    private static InetSocketAddress getInterfaceAddress(String interfaceName, int port) {
+    private static InetSocketAddress getInterfaceAddress(String interfaceName, int port,
+            Class<? extends InetAddress> addrType) {
         try {
             final NetworkInterface networkInterface = NetworkInterface.getByName(interfaceName);
             if (networkInterface == null) {
@@ -44,7 +46,7 @@ public class Proxy {
                     .filter(addr -> addr.isSiteLocalAddress()) //
                     .filter(addr -> !addr.isMulticastAddress()) //
                     .filter(addr -> !addr.isLoopbackAddress()) //
-                    .filter(addr -> addr instanceof Inet4Address) //
+                    .filter(addr -> addrType.isInstance(addr)) //
                     .collect(Collectors.toList());
             LOG.debug("Found {} usable addresses for interface {}: {}", usableAddresses.size(),
                     networkInterface.getDisplayName(), usableAddresses);
