@@ -1,11 +1,12 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'application'
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
+mainClassName = 'com.github.kaklakariada.proxy.Proxy'
 version = '0.0.1'
 sourceCompatibility = 1.8
 
