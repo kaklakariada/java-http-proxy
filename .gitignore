@@ -4,3 +4,4 @@ bin/
 build/
 
 .settings/org.eclipse.jdt.core.prefs
+/.nb-gradle/
